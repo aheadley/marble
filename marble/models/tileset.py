@@ -8,4 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 class TileSet(object):
-    pass
+    @classmethod
+    def load(cls, region_set, dest_vfs, render_config):
+        return cls(region_set, dest_vfs, render_config)
+
+    def __init__(self, region_set, dest_vfs, render_config):
+        pass
+
+    def render_tile(self, x, y):
+        pass
