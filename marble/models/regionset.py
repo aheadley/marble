@@ -26,9 +26,6 @@ class RegionSet(object):
         self._bounds = None
         self._vfs = vfs
 
-    def __iter__(self):
-        return self.iter_regions()
-
     @property
     def name(self):
         return os.path.basename(self._vfs)
@@ -56,14 +53,7 @@ class RegionSet(object):
     def iter_regions(self):
         for region_fn in self.get_region_paths():
             yield nbt.RegionFile(fileobj=self._vfs.open(region_fn, 'rb'))
-
-    def iter_chunks(self):
-        for region in self.iter_regions():
-            for chunk in region.iter_chunks():
-                yield chunk
-
-    def get_chunk(self, x, z):
-        pass
+    __iter__ = iter_regions
 
     @property
     def bounds(self):

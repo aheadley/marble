@@ -1,11 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-import boto3
-import logging
-
-logger = logging.getLogger(__name__)
-
 import os.path
 import fnmatch
 
@@ -67,5 +62,6 @@ class MinecraftWorld(dict):
         yield RegionSet.load(self._vfs.opendir('region'))
 
         dirs = self._vfs.ilistdir(dirs_only=True)
-        for dim_dirs = fnmatch.filter(dirs, 'DIM*/data'):
-            yield RegionSet.load(self._vfs.opendir(os.path.dirname(dim_dirs)))
+        for dim_dirs in fnmatch.filter(dirs, 'DIM*/data'):
+            yield RegionSet.load(self._vfs.opendir(
+                os.path.basename(os.path.dirname(dim_dirs))))
