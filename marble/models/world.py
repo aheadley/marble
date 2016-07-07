@@ -4,16 +4,15 @@
 import os.path
 import fnmatch
 
-import nbt
-from fs.opener import fsopendir
+from nbt.nbt import NBTFile
 from marble.util import nbt_to_native
 from marble.models.regionset import RegionSet
 
 class MinecraftWorld(dict):
     @classmethod
-    def load(self, vfs):
+    def load(cls, vfs):
         with vfs.open('level.dat', 'rb') as fd:
-            level_dat = nbt.NBTFile(fileobj=fd)
+            level_dat = NBTFile(fileobj=fd)
             world_data = nbt_to_native(level_dat['Data'])
 
         return cls(vfs, world_data)

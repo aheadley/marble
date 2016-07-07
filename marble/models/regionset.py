@@ -1,15 +1,10 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-import boto3
-import logging
-
-logger = logging.getLogger(__name__)
-
 import os.path
 import fnmatch
 
-import nbt
+from nbt.region import RegionFile
 
 class RegionSet(object):
     REGION_FILENAME         = u'r.{x}.{z}.mca'
@@ -28,7 +23,7 @@ class RegionSet(object):
 
     @property
     def name(self):
-        return os.path.basename(self._vfs)
+        return os.path.basename(self._vfs.root_path)
 
     @property
     def dim_id(self):
@@ -43,8 +38,9 @@ class RegionSet(object):
         return None
 
     def get_region(self, x, z):
-        fd = self._vfs.open(self.REGION_FILENAME.format(x=x, z=z), 'rb')
-        return nbt.RegionFile(fileobj=fd)
+        region_fn = self.REGION_FILENAME.format(x=x, z=z)
+        fd = self._vfs.open(region_fn, 'rb')
+        return RegionFile(fileobj=fd)
 
     def get_region_paths(self):
         return fnmatch.filter(self._vfs.ilistdir(files_only=True),
@@ -52,7 +48,7 @@ class RegionSet(object):
 
     def iter_regions(self):
         for region_fn in self.get_region_paths():
-            yield nbt.RegionFile(fileobj=self._vfs.open(region_fn, 'rb'))
+            yield RegionFile(fileobj=self._vfs.open(region_fn, 'rb'))
     __iter__ = iter_regions
 
     @property
