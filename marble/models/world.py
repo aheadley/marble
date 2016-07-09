@@ -17,25 +17,6 @@ class MinecraftWorld(dict):
 
         return cls(vfs, world_data)
 
-    # @classmethod
-    # def load_from_s3(cls, bucket, level_dat_key):
-    #     pass
-
-    # @classmethod
-    # def load_from_db(cls, db, key):
-    #     pass
-
-    # @classmethod
-    # def load_from_nbt(cls, nbt_file):
-    #     if isinstance(nbt_file, basestring):
-    #         with open(nbt_file, 'rb') as nbt_fd:
-    #             level_dat = nbt.NBTFile(fileobj=nbt_fd)
-    #             world_data = nbt_to_native(level_dat['Data'])
-    #     else:
-    #         level_dat = nbt.NBTFile(fileobj=nbt_file)
-    #         world_data = nbt_to_native(level_dat['Data'])
-    #     return cls(world_data)
-
     def __init__(self, vfs, *pargs, **kwargs):
         self._vfs = vfs
         super(MinecraftWorld, self).__init__(*pargs, **kwargs)
@@ -58,9 +39,16 @@ class MinecraftWorld(dict):
         return self['LevelName']
 
     def iter_regionsets(self):
-        yield RegionSet.load(self._vfs.opendir('region'))
+        yield self.get_regionset(RegionSet.PRIMARY_REGIONSET_NAME)
 
-        dirs = self._vfs.ilistdir(dirs_only=True)
-        for dim_dirs in fnmatch.filter(dirs, 'DIM*/data'):
-            yield RegionSet.load(self._vfs.opendir(
-                os.path.basename(os.path.dirname(dim_dirs))))
+        for fs_dir in self._vfs.ilistdir(dirs_only=True):
+            try:
+                yield self.get_regionset(fs_dir)
+            except ValueError:
+                continue
+
+    def get_regionset(self, name):
+        if self._vfs.isdir(os.path.join(name, RegionSet.REGION_SUBDIR)):
+            return RegionSet.load(name, self._vfs.opendir(name))
+        else:
+            raise ValueError('No regionset found for dimension: %s' % name)
