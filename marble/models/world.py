@@ -5,7 +5,7 @@ import os.path
 import fnmatch
 
 from nbt.nbt import NBTFile
-from marble.util import nbt_to_native
+from marble.util import nbt2py
 from marble.models.regionset import RegionSet
 
 class MinecraftWorld(dict):
@@ -13,7 +13,7 @@ class MinecraftWorld(dict):
     def load(cls, vfs):
         with vfs.open('level.dat', 'rb') as fd:
             level_dat = NBTFile(fileobj=fd)
-            world_data = nbt_to_native(level_dat['Data'])
+            world_data = nbt2py(level_dat['Data'])
 
         return cls(vfs, world_data)
 

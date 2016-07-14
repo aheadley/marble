@@ -3,8 +3,21 @@
 
 import collections
 
-nbt_to_native = lambda compound_tag: \
-    {tag_name: compound_tag[tag_name].value for tag_name in compound_tag}
+from nbt.nbt import TAG, _TAG_Numeric, TAG_Compound, TAG_String, TAG_Byte_Array
+
+def nbt2py(tag):
+    if not isinstance(tag, TAG):
+        return tag
+    if isinstance(tag, TAG_Compound):
+        return {tag_name: nbt2py(tag[tag_name]) for tag_name in tag}
+    if isinstance(tag, TAG_Byte_Array):
+        return tag.value
+    if isinstance(tag, collections.MutableSequence):
+        return [nbt2py(t) for t in tag]
+    if isinstance(tag, TAG_String):
+        return tag.value
+    if isinstance(tag, _TAG_Numeric):
+        return tag.value
 
 Range1D = collections.namedtuple('Range1D', ['min', 'max'])
 Range2D = collections.namedtuple('Range2D', ['x', 'z'])
