@@ -8,7 +8,7 @@ from nbt.region import RegionFile
 
 from ..util import Range1D, Range2D
 
-class RegionSet(object):
+class Dimension(object):
     PRIMARY_REGIONSET_NAME  = u''
     REGION_FILENAME         = u'r.{x}.{z}.mca'
     REGION_SUBDIR           = u'region'
